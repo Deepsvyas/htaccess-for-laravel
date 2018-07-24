@@ -5,31 +5,28 @@
  </IfModule>
  
  in public directory 
- <IfModule mod_rewrite.c>
+<IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews
     </IfModule>
 
     RewriteEngine On
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
+    #RewriteBase /
+
+    RewriteCond %{HTTPS} =off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Redirect Trailing Slashes...
     RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    
+    ErrorDocument 404 /404-uh-oh.html
 
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     
-    # Redirect redirectig to https...
-    # Force https on heroku...
-    # Important fact: X-forwarded-Proto will exist at your heroku dyno but wont locally.
-    # Hence we want: "if x-forwarded exists && if its not https, then rewrite it":
-    #RewriteCond %{HTTP:X-Forwarded-Proto} .
-    #RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    #RewriteRule ^ https://%{HTTP_HOST}/$1/%{REQUEST_URI} [L,R=301]
+    RewriteRule ^ index.php [L]
 </IfModule>
